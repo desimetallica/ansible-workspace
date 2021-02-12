@@ -1,0 +1,15 @@
+---
+- name: Intall Apache.
+  hosts: iperftest
+
+  tasks:
+          - name: Install Apache.
+            command: apt install --quiet -y apache2 apache2-dev
+          - name: Copy config files.
+            command: >
+                    cp apache2.conf /etc/apache2/conf/apache2.conf
+            command: >
+                    cp apache2-vhost /etc/apache2/conf/apache2-vhosts.conf
+          - name: Start apache and configure enabled
+            command: systemctl -now enable apache2
+          - command: systemctl is-enabled apache2
