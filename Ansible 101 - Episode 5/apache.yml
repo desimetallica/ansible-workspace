@@ -1,0 +1,60 @@
+---
+- name: Intall Apache.
+  hosts: solr
+  become: true
+
+  vars:
+    test_env: 
+      test1: test1
+      test2: test2
+
+  
+  handlers:
+    - name: restart apache2
+      service: 
+        name: apache2
+        state: restarted
+    - name: restart solr
+      service:
+        name: solr
+        state: restarted
+
+  tasks:
+    - name: Add enviroment variable to the remote user shell
+      lineinfile:
+        dest: "~/.bashrc"
+        regexp: '^ENV_VAR='
+        line: 'ENV_VAR=value'
+      become: false
+
+    - name: Get the value of an enviroment variable.
+      environment: 
+        - "{{test_env}}"
+      shell: 'echo $test1'
+      register: foo
+
+    # the output of the screen is registered on foo and
+    # i can use the var in the playbook on the var i 
+    # have stdout and stderr dictionary  
+    - debug: msg="the variable is {{foo.stdout}}"
+
+    - name: Ensure Apache is installed.
+      apt:
+        name: apache2
+        state: present
+    - name: Copy config into Apache2.
+      copy:
+        src: apache2.conf
+        dest: /etc/apache2/apache2.conf
+      notify: 
+        - restart apache2
+        - restart solr
+
+    - name: Make sure handlers are flushed immediatly.
+      meta: flush_handlers
+    
+    - name: Ensure Apache is running and started at boot.
+      service:
+        name: apache2
+        state: started
+        enabled: true
