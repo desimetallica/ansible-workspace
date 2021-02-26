@@ -2,9 +2,13 @@
 [solr]
 10.54.131.158 ansible_user=rai
 
+[rhel]
+10.54.131.157 ansible_user=crit ansible_become_pass=rai
+
 #Group of all servers
 [multi:children]
 solr
+rhel
 
 #Variable for all servers
 [multi:vars]

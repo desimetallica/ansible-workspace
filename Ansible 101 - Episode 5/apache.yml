@@ -1,18 +1,33 @@
 ---
 - name: Intall Apache.
-  hosts: solr
+  hosts: rhel
   become: true
 
+  # vars_files:
+  #   - "vars/apache_default.yml"
+  #   - "vars/apache_{{ ansible_os_family }}.yml"
+    
   vars:
     test_env: 
       test1: test1
       test2: test2
-
-  
+ 
+  # Ansible_os_family is part of ansible setup module you 
+  # can see all the configuration for your playbook with command:
+  # ansible -i inventory -m setup machineName
+  pre_tasks:
+    #- debug: var=ansible_os_family
+    - name: Load variable files
+      include_vars: "{{ item }}"
+      with_first_found: 
+        - "vars/apache_{{ ansible_os_family }}.yml"
+        - "vars/apache_default.yml"
+      
   handlers:
+    - debug: var=apache_service
     - name: restart apache2
       service: 
-        name: apache2
+        name: "{{ apache_service }}"
         state: restarted
     - name: restart solr
       service:
@@ -31,30 +46,40 @@
       environment: 
         - "{{test_env}}"
       shell: 'echo $test1'
-      register: foo
+      register: test1
+
+    - name: Get the value of a second enviroment variable.
+      environment: 
+        - "{{test_env}}"
+      shell: 'echo $test2'
+      register: test2
 
     # the output of the screen is registered on foo and
     # i can use the var in the playbook on the var i 
     # have stdout and stderr dictionary  
-    - debug: msg="the variable is {{foo.stdout}}"
+    - debug: msg="the variable is {{test1.stdout}}"
+    - debug: msg="the variable is {{test2.stdout}}"
 
     - name: Ensure Apache is installed.
-      apt:
-        name: apache2
+      package:
+        name: "{{ apache_package }}"
         state: present
+      register: output
+    - debug: var=output
+    
     - name: Copy config into Apache2.
       copy:
         src: apache2.conf
-        dest: /etc/apache2/apache2.conf
+        dest: "{{ apache_config_dir }}"
       notify: 
         - restart apache2
-        - restart solr
+        # - restart solr
 
     - name: Make sure handlers are flushed immediatly.
       meta: flush_handlers
     
     - name: Ensure Apache is running and started at boot.
       service:
-        name: apache2
+        name: "{{ apache_service }}"
         state: started
         enabled: true
