@@ -1,0 +1,9 @@
+{
+	"name": "exampleapp",
+	"description": "example node",
+	"author": "Davide <davide.desirello@rai.it>",
+	"dependencies": {
+		"express": "4.x"
+	},
+	"engine": "node >= 0.10.6"
+}

@@ -1,0 +1,15 @@
+#Solr servers
+[solr]
+10.54.131.156 ansible_user=rai
+
+[rhel]
+10.54.131.157 ansible_user=crit ansible_become_pass=rai
+
+#Group of all servers
+[multi:children]
+solr
+rhel
+
+#Variable for all servers
+[multi:vars]
+ansible_ssh_private_key_file=/home/desi/.ssh/id_iperf2

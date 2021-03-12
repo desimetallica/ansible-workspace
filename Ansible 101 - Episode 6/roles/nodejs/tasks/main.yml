@@ -1,0 +1,22 @@
+---
+ - name: Instal epel repo.
+   package:
+           name: epel-release
+           state: present
+
+ - name: Ensure firewalld is stopped.
+   service:
+           name: firewalld
+           state: stopped
+
+ - name: install Node.js and npm.
+   package:
+           name: npm
+           state: present
+           enablerepo: epel
+
+ - name: Install Forever (to run our Node.js app).
+   npm:
+           name: forever
+           global: yes
+           state: present

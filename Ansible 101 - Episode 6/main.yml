@@ -1,0 +1,49 @@
+---
+- hosts: rhel 
+  become: yes
+
+  vars_files:
+          - vars/api_key.yml
+
+  vars:
+          node_apps_location: /usr/local/opt/node
+
+  roles:
+          - nodejs
+
+  tasks:
+          - name: Echo the API key which was injected into the env.
+            shell: echo $API_KEY
+            environment:
+                    API_KEY: "{{ myapp_api_key }}"
+            register: echo_result
+            tags:
+                    - key
+                    - echo
+
+          - name: Print PATH. 
+            debug:
+                msg: "'{{ lookup('env', 'PATH') }}' is the PATH environment variable."
+
+          - name: Show result.
+            debug: var=echo_result.stdout
+
+          - name: Ensure node.js app folder exist.
+            file:
+                    path: "{{ node_apps_location }}"
+                    state: directory
+          - name: Copy example app to server.
+            copy:
+                    src: app
+                    dest: "{{ node_apps_location }}"
+          - name: Install dependencies defined in package.json.
+            npm:
+                    path: "{{ node_apps_location }}/app"
+          - name: Check list of running Node.js apps.
+            command: "/usr/local/bin/forever list"
+            register: forever_list
+            changed_when: false
+
+          - name: start example node.js app. 
+            command: "/usr/local/bin/forever start {{ node_apps_location }}/app/app.js"
+            when: "forever_list.stdout.find(node_apps_location + '/app/app.js') == -1"
