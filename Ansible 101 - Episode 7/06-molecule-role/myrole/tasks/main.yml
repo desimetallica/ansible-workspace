@@ -1,0 +1,10 @@
+---
+- name: Install apache.
+  package:
+          name: httpd
+          state: present
+
+- copy:
+        src: file.conf
+        dest: /etc/httpd/conf.d/welcome.conf
+# tasks file for myrole
