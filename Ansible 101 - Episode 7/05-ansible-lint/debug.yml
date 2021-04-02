@@ -1,18 +1,14 @@
 ---
 - hosts: localhost
-  gather_facts: no
+  gather_facts: false
   connection: local
 
   tasks:
           - name: Register uptime command.
             command: uptime
+            changed_when: false
             register: system_uptime
 
           - name: Print registered output.
-            debug: 
-                var: system_uptime.stdout
-
-          - name: Print if command result change.
             debug:
-                msg: "command changed"
-            when: system_uptime is changed 
+                    var: system_uptime.stdout

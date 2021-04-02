@@ -4,15 +4,16 @@
   connection: local
 
   tasks:
-          - name: Register uptime command.
-            command: uptime
-            register: system_uptime
+          # - name: Register uptime command.
+          #  command: uptime
+          #  register: system_uptime
 
-          - name: Print registered output.
-            debug:
-                    var: system_uptime.stdout
+          # sintax check will pass wheter or not this file exists.
+          - include_tasks: dates.yml
 
-          - name: Print if command result change.
+          # this will cause a failure, since it can be checked statically
+          - import_tasks: free.yml
+
+          - name: Print debug output.
             debug:
-                    msg: "command changed"
-            when: system_uptime is changed
+                    msg: "Hello error"
