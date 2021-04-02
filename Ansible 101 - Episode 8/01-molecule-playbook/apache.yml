@@ -1,0 +1,94 @@
+---
+- name: Intall Apache.
+  hosts: all
+  become: true
+
+  # vars_files:
+  #   - "vars/apache_default.yml"
+  #   - "vars/apache_{{ ansible_os_family }}.yml"
+  vars:
+    apache_service: apache2
+    apache_package: apache2 
+    test_env:
+      test1: test1
+      test2: test2
+  # Ansible_os_family is part of ansible setup module you
+  # can see all the configuration for your playbook with command:
+  # ansible -i inventory -m setup machineName
+  pre_tasks:
+    # - debug: var=ansible_os_family
+    #    - name: Load variable files
+    # include_vars: "{{ item }}"
+    # with_first_found:
+    #   - "vars/apache_{{ ansible_os_family }}.yml"
+    #   - "vars/apache_default.yml"
+    - name: Override Apache vars for Red Hat
+      set_fact: 
+        apache_service: httpd
+        apache_package: httpd
+      when: ansible_os_family == 'RedHat'
+  handlers:
+          # - name: Get apache_service var
+          # debug: var=apache_service
+    - name: restart apache2
+      service:
+        name: "{{ apache_service }}"
+        state: restarted
+    - name: restart solr
+      service:
+        name: solr
+        state: restarted
+
+  tasks:
+    - name: Add enviroment variable to the remote user shell
+      lineinfile:
+        dest: "~/.bashrc"
+        regexp: '^ENV_VAR='
+        line: 'ENV_VAR=value'
+      become: false
+
+    - name: Get the value of an enviroment variable.
+      environment:
+        - "{{ test_env }}"
+      shell: 'echo $test1'
+      register: test1
+
+    - name: Get the value of a second enviroment variable.
+      environment:
+        - "{{ test_env }}"
+      shell: 'echo $test2'
+      register: test2
+
+    # the output of the screen is registered on foo and
+    # i can use the var in the playbook on the var i
+    # have stdout and stderr dictionary
+    - name: Out test1 var.
+      debug: msg="the variable is {{ test1.stdout }}"
+
+    - name: Out test2 var.
+      debug: msg="the variable is {{ test2.stdout }}"
+
+    - name: Ensure Apache is installed.
+      package:
+        name: "{{ apache_package }}"
+        state: present
+      register: output
+
+    - name: Get out into var
+      debug: var=output
+
+      # - name: Copy config into Apache2.
+      # copy:
+      #  src: apache2.conf
+      # dest: "{{ apache_config_dir }}"
+      # notify:
+      #  - restart apache2
+      #  - restart solr
+
+    - name: Make sure handlers are flushed immediatly.
+      meta: flush_handlers
+    - name: Ensure Apache is running and started at boot.
+      service:
+        name: "{{ apache_service }}"
+        state: started
+        enabled: true

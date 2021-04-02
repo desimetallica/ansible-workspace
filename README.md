@@ -14,3 +14,11 @@ https://youtu.be/HU-dkXBCPdU
 Ep 6:
 Ansible 101 - Episode 6 - Ansible Vault and Roles
 https://youtu.be/JFweg2dUvqM
+
+Ep 7:
+Ansible 101 - Episode 7 - Molecule Testing and Linting and Ansible Galaxy
+https://youtu.be/FaXVZ60o8L8
+
+Ep 8:
+Ansible 101 - Episode 8 - Playbook testing with Molecule and GitHub Actions CI
+https://youtu.be/CYghlf-6Opc
