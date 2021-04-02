@@ -34,10 +34,6 @@
       service:
         name: "{{ apache_service }}"
         state: restarted
-    - name: restart solr
-      service:
-        name: solr
-        state: restarted
 
   tasks:
     - name: Add enviroment variable to the remote user shell
