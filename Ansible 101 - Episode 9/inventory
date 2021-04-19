@@ -1,0 +1,9 @@
+[centos]
+10.54.131.156 ansible_user=centos
+
+[ubuntu]
+10.54.131.157 ansible_user=rai
+
+[multi:children]
+centos
+ubuntu
