@@ -22,3 +22,11 @@ https://youtu.be/FaXVZ60o8L8
 Ep 8:
 Ansible 101 - Episode 8 - Playbook testing with Molecule and GitHub Actions CI
 https://youtu.be/CYghlf-6Opc
+
+Ep 9:
+Ansible 101 - Episode 9 - First 5 min server security with Ansible
+https://youtu.be/gV_16dU7XjM
+
+Ep 11:
+Ansible 101 - Episode 11 - Dynamic Inventory and Smart Inventories
+https://youtu.be/_rDzMYp-fBs
